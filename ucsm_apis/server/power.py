@@ -30,6 +30,27 @@ def _server_dn_get(chassis_id=None, blade_id=None, rack_id=None):
             "(chassis_id, blade_id) or rack_id")
     return dn
 
+def server_power_get(
+        handle,
+        chassis_id=None,
+        blade_id=None,
+        rack_id=None,
+        state=None,
+        oper_power=None):
+    dn = _server_dn_get(
+        chassis_id=chassis_id,
+        blade_id=blade_id,
+        rack_id=rack_id)
+    blade_mo = handle.query_dn(dn)
+    if blade_mo is None:
+        UcsOperationError(
+            "server_power_get: Failed to get server power",
+            "sever %s does not exist" % (dn))
+
+    sp_mo = handle.query_dn(blade_mo.oper_power)
+    LsPower(
+        parent_mo_or_dn=sp_mo,
+        state=oper_power)
 
 def _service_profile_power_set(
         handle,
